@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_requisition_transfer,requisition.transfer,model_requisition_transfer,,1,1,1,1
+access_requisition_transfer_line,requisition.transfer.line,model_requisition_transfer_line,,1,1,1,1
+access_requisition_receive,requisition.receive,model_requisition_receive,,1,1,1,1
+access_requisition_receive_line,requisition.receive.line,model_requisition_receive_line,,1,1,1,1
