@@ -34,6 +34,7 @@ class RequisitionReceive(models.Model):
                                        domain=[('transfer', '=', True)])
     from_company = fields.Many2one('res.company', 'Sender Company', required=True, readonly=True, index=True)
     warehouse_id = fields.Many2one('stock.warehouse', 'Warehouse', index=True)
+    pricelist_id = fields.Many2one('product.pricelist', string='Pricelist', required=True)
     to_company = fields.Many2one('res.company', 'Company', required=True, index=True, readonly=True)
     user_check = fields.Boolean('Check User', required=True, index=True, compute="_compute_user_check")
 
@@ -95,6 +96,7 @@ class RequisitionReceive(models.Model):
         sale_order = {}
         sale_order['partner_id'] = self.sender_partner.id
         sale_order['user_id'] = self.receiver_user_id.id
+        sale_order['pricelist_id'] = self.pricelist_id.id
         sale_order['date_order'] = self.date_confirm
         sale_order['company_id'] = self.to_company.id
         sale_order['transfer_req_id'] = self.transfer_req_id.id
@@ -115,9 +117,18 @@ class RequisitionReceive(models.Model):
         sale = self.env['sale.order'].sudo().with_context(force_company=self.to_company.id, default_company_id=self.to_company.id).create(sale_order_list)
         sale.write({'rcv_req_id': self.id})
         print("sale: ", sale)
+
+        # For auto confirming Auto created Purchase order
+        sale.with_context(force_company=self.to_company.id, default_company_id=self.to_company.id).action_confirm()
+
+        # For auto confirming Auto created Purchase order
+        auto_purchase = self.env['purchase.order'].sudo().with_context(
+            default_company_id=self.from_company.id).search(
+            [('auto_sale_order_id', '=', sale.id)])
+        auto_purchase.with_context(force_company=self.from_company.id, default_company_id=self.from_company.id).button_confirm()
+
         self.transfer_req_id.state = 'confirm'
         self.state = 'confirm'
-
 
     def action_view_sale(self):
         return {
@@ -146,7 +157,7 @@ class ReqRcvLine(models.Model):
         for rec in self:
             if rec.product_id:
                 print("product has")
-                quant = self.product_id.with_context(warehouse=rec.received_requisition_id.warehouse_id.id)
+                quant = rec.product_id.with_context(warehouse=rec.received_requisition_id.warehouse_id.id)
                 rec.free_qty = quant.free_qty
                 print("rec.free_qty: ", rec.free_qty)
                 rec.onhand_qty = quant.qty_available

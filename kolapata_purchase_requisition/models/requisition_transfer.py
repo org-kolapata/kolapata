@@ -43,7 +43,16 @@ class RequisitionTransfer(models.Model):
         for rec in self:
             if rec.receiver_partner:
                 rec.to_company = rec.receiver_partner.partner_company
-                return {'domain': {'receiver_user_id': [('company_id', '=', rec.receiver_partner.partner_company.id)]}}
+                users = self.env['res.users'].sudo().with_context(
+                    default_company_id=rec.to_company.id).search([('company_id', '=', rec.to_company.id)])
+                for user in users:
+                    rec.receiver_user_id = user.id
+                print("rec.receiver_user_id: ", rec.receiver_user_id)
+                print("users: ", users)
+                print("rec.to_company: ", rec.to_company)
+                # return {'domain': {'receiver_user_id': [('company_id', '=', rec.receiver_partner.partner_company.id)]}}
+
+
 
     @api.model
     def create(self, vals):
