@@ -119,13 +119,13 @@ class RequisitionReceive(models.Model):
         print("sale: ", sale)
 
         # For auto confirming Auto created Purchase order
-        sale.with_context(force_company=self.to_company.id, default_company_id=self.to_company.id).action_confirm()
-
-        # For auto confirming Auto created Purchase order
-        auto_purchase = self.env['purchase.order'].sudo().with_context(
-            default_company_id=self.from_company.id).search(
-            [('auto_sale_order_id', '=', sale.id)])
-        auto_purchase.with_context(force_company=self.from_company.id, default_company_id=self.from_company.id).button_confirm()
+        # sale.with_context(force_company=self.to_company.id, default_company_id=self.to_company.id).action_confirm()
+        #
+        # # For auto confirming Auto created Purchase order
+        # auto_purchase = self.env['purchase.order'].sudo().with_context(
+        #     default_company_id=self.from_company.id).search(
+        #     [('auto_sale_order_id', '=', sale.id)])
+        # auto_purchase.with_context(force_company=self.from_company.id, default_company_id=self.from_company.id).button_confirm()
 
         self.transfer_req_id.state = 'confirm'
         self.state = 'confirm'
@@ -174,3 +174,16 @@ class SaleOrder(models.Model):
 
     transfer_req_id = fields.Many2one('requisition.transfer', "Requisition Transfer No", Readonly=True)
     rcv_req_id = fields.Many2one('requisition.receive', "Requisition Receive No", Readonly=True)
+
+    def action_confirm(self):
+        res = super(SaleOrder, self).action_confirm()
+        for rec in self:
+            if rec.rcv_req_id:
+                # For auto confirming Auto created Purchase order
+                auto_purchase = self.env['purchase.order'].sudo().with_context(
+                    default_company_id=rec.rcv_req_id.from_company.id).search(
+                    [('auto_sale_order_id', '=', rec.id)])
+                auto_purchase.with_context(force_company=rec.rcv_req_id.from_company.id,
+                                           default_company_id=rec.rcv_req_id.from_company.id).button_confirm()
+
+

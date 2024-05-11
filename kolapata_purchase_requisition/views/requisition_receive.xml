@@ -73,10 +73,10 @@
                             </group>
 
                             <group>
-                                <field name="pricelist_id" readonly="state in ['confirm', 'cancel']"/>
                                 <field name="date_transfer" readonly="state in ['submit', 'confirm', 'cancel']"/>
                                 <field name="date_confirm" readonly="state in ['confirm', 'cancel']"/>
                                 <field name="transfer_req_id" readonly="1"/>
+                                <field name="pricelist_id" readonly="state in ['confirm', 'cancel']"/>
                                 <field name="from_company" options="{'no_create': True, 'no_open': True}"
                                        readonly="state != 'draft'"/>
 
