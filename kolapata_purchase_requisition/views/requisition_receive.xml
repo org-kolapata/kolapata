@@ -1,0 +1,153 @@
+<odoo>
+    <data>
+        <record id="view_order_form_kolapata" model="ir.ui.view">
+            <field name="name">sale.order.form.kolapata</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form" />
+            <field name="arch" type="xml">
+                  <xpath expr="//field[@name='date_order']" position="after">
+                      <field name="transfer_req_id" readonly="1"/>
+                      <field name="rcv_req_id" readonly="1" />
+        		  </xpath>
+            </field>
+        </record>
+        <record id="requisition_rcv_tree" model="ir.ui.view">
+            <field name="name">requisition.receive.tree</field>
+            <field name="model">requisition.receive</field>
+            <field name="arch" type="xml">
+                <tree decoration-info="state == 'submit'" decoration-muted="state == 'cancel'"
+                      string="Requisition Receive" edit="0" create="0">
+                    <field name="transfer_req_id"/>
+                    <field name="name"/>
+                    <field name="date_confirm"/>
+                    <field name="from_company"/>
+                    <field name="to_company"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="requisition_receive_form">
+            <field name="name">requisition.receive.form</field>
+            <field name="model">requisition.receive</field>
+            <field name="arch" type="xml">
+                <form string="Requisition Receive" create="0">
+                    <header>
+
+                        <button type="object" name="action_confirm"
+                                  string="Confirm"
+                                  class="oe_highlight"
+                                  invisible="state != 'submit'"/>
+                        <button name="cancel" string="Cancel" type="object" class="oe_highlight"
+                                invisible="state not in ['draft', 'submit']"/>
+
+                        <field name="state" widget="statusbar" statusbar_visible="draft,submit,confirm,cancel"/>
+                    </header>
+
+
+                    <sheet>
+                         <div name="button_box" class="oe_button_box">
+                            <button type="object"
+                                    name="action_view_sale"
+                                    invisible="state != 'confirm'"
+                                    class="oe_stat_button"
+                                    icon="fa-dollar">
+                                <field name="sale_count" string="Sale" widget="statinfo"/>
+                            </button>
+                        </div>
+
+                        <div class="oe_title">
+                            <span class="o_form_label">Requisition Receive</span>
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="sender_partner" force_save="1" readonly="state != 'draft'" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="receiver_partner" readonly="state != 'draft'" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="sender_user_id" readonly="state != 'draft'"/>
+                                <field name="receiver_user_id" readonly="state != 'draft'" options="{'no_create': True, 'no_open': True}"/>
+                                <field name="current_user_id"/>
+                                <field name="warehouse_id" invisible="1"/>
+                            </group>
+
+                            <group>
+                                <field name="date_transfer" readonly="state in ['submit', 'confirm', 'cancel']"/>
+                                <field name="date_confirm" readonly="state in ['confirm', 'cancel']"/>
+                                <field name="transfer_req_id" readonly="1"/>
+                                <field name="pricelist_id" readonly="state in ['confirm', 'cancel']"/>
+                                <field name="from_company" options="{'no_create': True, 'no_open': True}"
+                                       readonly="state != 'draft'"/>
+
+                                <field name="to_company"
+                                       readonly="state != 'draft'"
+                                       options="{'no_create': True, 'no_open': True}"/>
+
+                            </group>
+
+                        </group>
+                        <notebook>
+                            <page string="Requisition Receive Lines">
+                                <field name="received_order_line_ids"
+                                       readonly="state in ['confirm', 'cancel']">
+                                    <tree string="Requisition Request Lines" editable="bottom">
+                                        <field name="product_id" options="{'no_create_edit': True}"/>
+                                        <field name="quantity"/>
+                                        <field name="uom_id"/>
+                                        <field name="onhand_qty"/>
+                                        <field name="free_qty"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="requisition_receive_action">
+            <field name="name">Requisition Receive</field>
+            <field name="res_model">requisition.receive</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+            <field name="domain">[('receiver_user_id', '=', uid)]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">There is no transfer yet !
+                </p>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="all_requisition_receive_action">
+            <field name="name">All Requisition Receive</field>
+            <field name="res_model">requisition.receive</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">All Requisition Receive will be shown here !
+                </p>
+            </field>
+        </record>
+
+
+        <menuitem name="Requisition Receive"
+                  id="requisition_receive_menu"
+                  parent="requisition_main_menu"
+                  action="requisition_receive_action"
+                  sequence="1"
+                  groups="purchase.group_purchase_user"
+        />
+
+        <menuitem name="All Requisition Receive"
+                  id="all_requisition_receive_menu"
+                  parent="all_requisition_main_menu"
+                  action="all_requisition_receive_action"
+                  sequence="2"
+                  groups="account.group_account_manager"
+        />
+    </data>
+</odoo>
