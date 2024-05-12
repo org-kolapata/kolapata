@@ -34,7 +34,7 @@ class RequisitionReceive(models.Model):
                                        domain=[('transfer', '=', True)])
     from_company = fields.Many2one('res.company', 'Sender Company', required=True, readonly=True, index=True)
     warehouse_id = fields.Many2one('stock.warehouse', 'Warehouse', index=True)
-    pricelist_id = fields.Many2one('product.pricelist', string='Pricelist', required=True)
+    pricelist_id = fields.Many2one('product.pricelist', string='Pricelist')
     to_company = fields.Many2one('res.company', 'Company', required=True, index=True, readonly=True)
     user_check = fields.Boolean('Check User', required=True, index=True, compute="_compute_user_check")
 
@@ -82,6 +82,11 @@ class RequisitionReceive(models.Model):
         if not self.received_order_line_ids:
             raise UserError(
                 _('Please Enter Order Line information.'))
+
+        if not self.pricelist_id:
+            raise UserError(
+                _('Please Select desired pricelist.'))
+
         for rec in self.received_order_line_ids:
 
             if rec.quantity > rec.free_qty:
