@@ -185,5 +185,7 @@ class SaleOrder(models.Model):
                     [('auto_sale_order_id', '=', rec.id)])
                 auto_purchase.with_context(force_company=rec.rcv_req_id.from_company.id,
                                            default_company_id=rec.rcv_req_id.from_company.id).button_confirm()
+                auto_purchase.with_context(force_company=rec.rcv_req_id.from_company.id,
+                                           default_company_id=rec.rcv_req_id.from_company.id).button_done()
 
 
