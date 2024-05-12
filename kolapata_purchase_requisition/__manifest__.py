@@ -2,7 +2,7 @@
 {
     'name': "Kolapata Purchase Requisition",
 
-    'summary': "Manage Inter company Transaction by Sending Requisition",
+    'summary': "Manage Inter company Transaction by Sending Requisition u",
 
     'description': """ Manage Inter company Transaction by Sending Requisition
     """,
