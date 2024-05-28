@@ -7,13 +7,11 @@ from odoo import models
 class PosSession(models.Model):
 	_inherit = 'pos.session'
 
-
 	def _loader_params_product_product(self):
 		result = super()._loader_params_product_product()
 		result['search_params']['fields'].extend(['detailed_type','virtual_available',
 					'qty_available','incoming_qty','outgoing_qty','quant_text'])
 		return result
-
 
 	def _pos_ui_models_to_load(self):
 		result = super()._pos_ui_models_to_load()

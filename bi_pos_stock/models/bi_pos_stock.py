@@ -85,7 +85,13 @@ class stock_quant(models.Model):
 
         res = product_id._compute_quantities_dict(self._context.get('lot_id'), self._context.get('owner_id'), self._context.get('package_id'), self._context.get('from_date'), self._context.get('to_date'))
         product[0]['qty_available'] = res[product_id.id]['qty_available']
-        if product :
+
+        print("product: ", product)
+        print("product_id: ", product_id)
+        print("res: ", res)
+        print("product[0]['qty_available']: ", product[0]['qty_available'])
+
+        if product:
             categories = ssn_obj._get_pos_ui_product_category(ssn_obj._loader_params_product_category())
             product_category_by_id = {category['id']: category for category in categories}
             product[0]['categ'] = product_category_by_id[product[0]['categ_id'][0]]
@@ -100,12 +106,23 @@ class stock_quant(models.Model):
             self.env['bus.bus']._sendmany(notifications)
         return True
 
-    @api.model
-    def create(self, vals):
-        res = super(stock_quant, self).create(vals)
+    # @api.model
+    # def create(self, vals):
+    #     res = super(stock_quant, self).create(vals)
+    #     print("res: ", res)
+    #     notifications = []
+    #     for rec in res:
+    #         rec.sync_product(rec.product_id.id)
+    #     return res
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super(stock_quant, self).create(vals_list)
+        print("res: ", res)
         notifications = []
         for rec in res:
             rec.sync_product(rec.product_id.id)
+
         return res
 
     def write(self, vals):
