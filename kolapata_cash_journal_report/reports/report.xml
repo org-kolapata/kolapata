@@ -1,0 +1,11 @@
+<odoo>
+
+    <record id="journal_report" model="ir.actions.report">
+        <field name="name">Cash Office Journal Report</field>
+        <field name="model">cash.journal.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">kolapata_cash_journal_report.journal_report_pdf</field>
+        <field name="report_file">kolapata_cash_journal_report.journal_report_pdf</field>
+    </record>
+            
+</odoo>

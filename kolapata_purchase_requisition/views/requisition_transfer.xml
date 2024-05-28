@@ -30,9 +30,6 @@
                                   invisible="state != 'draft'"
                                   />
 
-<!--                        <button name="cancel" string="Cancel" type="object" class="oe_highlight"-->
-<!--                                states="draft"/>-->
-
                         <field name="state" widget="statusbar" statusbar_visible="draft,submit,confirm,cancel"/>
                     </header>
 
@@ -116,7 +113,8 @@
         <menuitem name="Requisition"
                   id="requisition_root_menu"
                   sequence="4"
-                  groups="base.group_user"
+                  groups="kolapata_purchase_requisition.group_purchase_requisition_user"
+                  web_icon="kolapata_purchase_requisition,static/description/icon.png"
         />
 
         <menuitem name="Requisition"

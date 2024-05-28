@@ -28,12 +28,12 @@ class RequisitionReceive(models.Model):
     sender_user_id = fields.Many2one('res.users', string='Requester (User)', readonly=True)
     current_user_id = fields.Many2one('res.users', string='Current User', readonly=True, compute="_compute_current_user")
     receiver_user_id = fields.Many2one('res.users', string='Provider (User)', required=True)
-    sender_partner = fields.Many2one('res.partner', string='Requester (User)', required=True,
+    sender_partner = fields.Many2one('res.partner', string='Requester (Partner)', required=True,
                                      domain=[('transfer', '=', True)])
     receiver_partner = fields.Many2one('res.partner', string='Provider (Partner)', required=True,
                                        domain=[('transfer', '=', True)])
     from_company = fields.Many2one('res.company', 'Sender Company', required=True, readonly=True, index=True)
-    warehouse_id = fields.Many2one('stock.warehouse', 'Warehouse', index=True)
+    warehouse_id = fields.Many2one('stock.warehouse', 'Warehouse', index=True, compute="_compute_warehouse")
     pricelist_id = fields.Many2one('product.pricelist', string='Pricelist')
     to_company = fields.Many2one('res.company', 'Company', required=True, index=True, readonly=True)
     user_check = fields.Boolean('Check User', required=True, index=True, compute="_compute_user_check")
@@ -51,18 +51,22 @@ class RequisitionReceive(models.Model):
 
     def _compute_current_user(self):
         self.current_user_id = self.env.uid
-        warehouse = self.to_company.warehouse_id or False
-        self.warehouse_id = warehouse.id
-        print("warehouse_id: ", self.warehouse_id.name)
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', _('New')) == _('New'):
-            vals['name'] = self.env['ir.sequence'].next_by_code(
-                'requisition.receive.sequence') or _('New')
+    def _compute_warehouse(self):
+        for rec in self:
+            warehouse = self.env['stock.warehouse'].sudo().search([('company_id', '=', rec.to_company.id)])
+            rec.warehouse_id = warehouse.id
+            print("warehouse_id: ", rec.warehouse_id.name)
 
-        res = super(RequisitionReceive, self).create(vals)
-        return res
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', _('New')) == _('New'):
+                vals['name'] = self.env['ir.sequence'].next_by_code(
+                    'requisition.receive.sequence') or _('New')
+
+        return super(RequisitionReceive, self).create(vals_list)
+
 
     def cancel(self):
         """ Sets state to Cancel """
@@ -89,10 +93,9 @@ class RequisitionReceive(models.Model):
 
         for rec in self.received_order_line_ids:
 
-            if rec.quantity > rec.free_qty:
+            if rec.quantity > rec.onhand_qty:
                 raise ValidationError(
-                    _("You can not Transfer Product having greater qty of free qty.\n The Actual transferable qty of product '%s' is '%s' ") % (rec.product_id.name,
-                                    rec.free_qty))
+                    _("You can not Transfer Product having greater qty of On hand qty.\n The On hand qty of product '%s' is '%s' ") % (rec.product_id.name, rec.onhand_qty))
 
         self.date_confirm = date.today()
 
@@ -149,6 +152,7 @@ class RequisitionReceive(models.Model):
 
 class ReqRcvLine(models.Model):
     _name = "requisition.receive.line"
+    _description = "Received Requisition Line"
 
     received_requisition_id = fields.Many2one('requisition.receive', string='Received Order No')
     product_id = fields.Many2one('product.product', string='Product', required=True)
@@ -172,13 +176,12 @@ class ReqRcvLine(models.Model):
                 rec.onhand_qty = 0.0
 
 
-
 class SaleOrder(models.Model):
 
     _inherit = "sale.order"
 
-    transfer_req_id = fields.Many2one('requisition.transfer', "Requisition Transfer No", Readonly=True)
-    rcv_req_id = fields.Many2one('requisition.receive', "Requisition Receive No", Readonly=True)
+    transfer_req_id = fields.Many2one('requisition.transfer', "Requisition Transfer No", readonly=True)
+    rcv_req_id = fields.Many2one('requisition.receive', "Requisition Receive No", readonly=True)
 
     def action_confirm(self):
         res = super(SaleOrder, self).action_confirm()
@@ -188,9 +191,24 @@ class SaleOrder(models.Model):
                 auto_purchase = self.env['purchase.order'].sudo().with_context(
                     default_company_id=rec.rcv_req_id.from_company.id).search(
                     [('auto_sale_order_id', '=', rec.id)])
+                auto_purchase.transfer_req_id = rec.transfer_req_id.id
+                auto_purchase.rcv_req_id = rec.rcv_req_id.id
                 auto_purchase.with_context(force_company=rec.rcv_req_id.from_company.id,
                                            default_company_id=rec.rcv_req_id.from_company.id).button_confirm()
                 auto_purchase.with_context(force_company=rec.rcv_req_id.from_company.id,
                                            default_company_id=rec.rcv_req_id.from_company.id).button_done()
+
+
+class PurchaseOrder(models.Model):
+
+    _inherit = "purchase.order"
+
+    transfer_req_id = fields.Many2one('requisition.transfer', "Req Transfer No", readonly=True)
+    rcv_req_id = fields.Many2one('requisition.receive', "Req Receive No", readonly=True)
+    state = fields.Selection(selection_add=[('wrong', 'Wrong Order')])
+
+    def action_wrong(self):
+        self.state = 'wrong'
+
 
 

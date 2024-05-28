@@ -1,24 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
-<!--
-        <template id="listing">
-          <ul>
-            <li t-foreach="objects" t-as="object">
-              <a t-attf-href="#{ root }/objects/#{ object.id }">
-                <t t-esc="object.display_name"/>
-              </a>
-            </li>
-          </ul>
-        </template>
-        <template id="object">
-          <h1><t t-esc="object.display_name"/></h1>
-          <dl>
-            <t t-foreach="object._fields" t-as="field">
-              <dt><t t-esc="field"/></dt>
-              <dd><t t-esc="object[field]"/></dd>
+
+        <record id="kolapata_requisition_report" model="ir.actions.report">
+           <field name="name">Print Requisition</field>
+           <field name="model">requisition.receive</field>
+           <field name="report_type">qweb-pdf</field>
+           <field name="report_name">kolapata_purchase_requisition.received_req_template</field>
+           <field name="report_file">kolapata_purchase_requisition.received_req_template</field>
+           <field name="print_report_name">'Requisition Report - %s' % (object.name)</field>
+           <field name="binding_model_id" ref="kolapata_purchase_requisition.model_requisition_receive"/>
+           <field name="binding_type">report</field>
+       </record>
+
+        <template id="received_req_template">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <t t-set="count" t-value="0" />
+                    <div class="page">
+                       <div class="oe_structure"/>
+                        <t t-foreach="docs" t-as="o">
+                            <center><h3>Received Requisition</h3></center>
+                            <br/>
+                            <br/>
+
+                            <div class ="order_info" style="width: 100%">
+
+                                    <div style="float: left; padding-left: 10px; padding-top: 5px; width: 58%;">
+                                        <p> <b>Requester User : </b>    <span t-field="o.sender_user_id.name">    </span> </p>
+                                        <p> <b>Requester Company : </b>    <span t-field="o.from_company.name">    </span> </p>
+                                        <p> <b>Provider User: </b>  <span t-field="o.receiver_user_id.name">    </span>  </p>
+                                        <p> <b>Provider Company: </b>    <span t-field="o.to_company.name"/></p>
+                                    </div>
+
+
+                                    <div style="float: right;padding-right: 10px; padding-top: 5px; text-align:left; width: 38%;">
+                                        <p> <b>Request Date : </b>  <span t-field="o.date_transfer">    </span> </p>
+                                        <p> <b>Confirmation Date: </b>   <span t-field="o.date_confirm"/>  </p>
+                                        <p> <b>Transfer Requisition No: </b>    <span t-field="o.transfer_req_id.name"/></p>
+                                        <p> <b>Received Requisition No: </b>    <span t-field="o.name"/></p>
+                                    </div>
+
+                                    <style>
+                                                .order_info {border: none;
+                                                                height: 180px;
+                                                                line-height: 12px;
+                                                                font-size: 14px;
+                                                                overflow: hidden;
+                                                    }
+                                    </style>
+
+                                </div>
+                                <br/>
+
+
+                            <table class="table table-sm o_main_table">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">SL </th>
+                                        <th class="text-center">Product </th>
+                                        <th class="text-center">Quantity</th>
+                                        <th class="text-center">UOM</th>
+                                        <th class="text-center">On Hand Qty</th>
+                                        <th class="text-center">Free Qty</th>
+                                        <th class="text-center" style="width: 20%;">Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-set="i" t-value="0" />
+                                    <tr t-foreach="o.received_order_line_ids" t-as="line">
+                                       <t t-set="i" t-value="i+1" />
+                                        <td class="text-center"><span t-esc="i" /></td>
+                                        <td class="text-center"><span t-field="line.product_id.name"/></td>
+                                        <td class="text-center"><span t-field="line.quantity"/></td>
+                                        <td class="text-center"><span t-field="line.uom_id.name"/></td>
+                                        <td class="text-center"><span t-field="line.onhand_qty"/></td>
+                                        <td class="text-center"><span t-field="line.free_qty"/></td>
+                                        <td class="text-center"></td>
+
+                                   </tr>
+
+                                </tbody>
+                                <style>
+
+                                        td, tr, th {border: 1px solid black;
+                                                                font-size:14px;
+                                        }
+                                </style>
+                            </table>
+                            <br/>
+                            <br/>
+                        </t>
+                    </div>
+                </t>
             </t>
-          </dl>
         </template>
--->
     </data>
 </odoo>
