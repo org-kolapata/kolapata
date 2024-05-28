@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <template id="journal_report_pdf">
+        <t t-call="web.html_container">
+            <t t-call="web.internal_layout">
+                <div class="page">
+                    <div class="oe_structure"/>
+                    <h3>Company Wise Cash Office Journal Report</h3>
+                    <br/>
+                    <div>
+                        <div class="row pims_report_content">
+                            <div class="col-3">
+                                <strong>Date From:</strong>
+                                <p t-esc="date_start" t-options='{"widget": "date"}'></p>
+                            </div>
+                            <div class="col-3">
+                                <strong>Date To:</strong>
+                                <p t-esc="date_end" t-options='{"widget": "date"}'></p>
+                            </div>
+                            <div class="col-3">
+                            </div>
+                            <div class="col-3">
+                            </div>
+
+                        </div>
+                        <br/>
+                        <br/>
+
+                        <table class="table table-sm o_main_table">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:left; text-transform: uppercase;">Company</th>
+                                    <th style="text-align:right; text-transform: uppercase;">Total Amount</th>
+                                </tr>
+                            </thead>
+
+                            <t t-set="total_amount" t-value="0"/>
+
+                            <t t-foreach="products" t-as="product">
+                                <t t-set="total_amount" t-value="total_amount+product['amount_total_signed']"/>
+                                <tr> <!-- Normal lines -->
+                                    <td style="text-align:left;"><t t-esc="product['company']" /></td>
+                                    <td style="text-align:right;"><t t-esc="product['amount_total_signed']" t-options="{'widget': 'float', 'precision': currency_precision}"/></td>
+                                </tr>
+                            </t>
+                            <tr>
+                                <td style="text-align:left; font-size: 16px;">Total</td>
+                                <td style="text-align:right; font-size: 16px;"><t t-esc="total_amount" t-options="{'widget': 'float', 'precision': currency_precision}"/></td>
+                            </tr>
+                            <style>
+                                    td, tr, th {border: 1px solid black;
+                                                            font-size:14px;
+                                    }
+                            </style>
+                        </table>
+                    </div>
+                    <br></br>
+                    <p style="text-align:center"> *** END OF DOCUMENT ***</p>
+                </div>
+           </t>
+        </t>
+    </template>
+</odoo>

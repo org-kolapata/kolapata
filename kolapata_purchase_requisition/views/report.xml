@@ -1,0 +1,10 @@
+<odoo>
+    <report
+        id="pur_req_report"
+        string="Requisition Report"
+        model="requisition.receive"
+        report_type="qweb-pdf"
+        name="kolapata_purchase_requisition.received_req_template"
+        file="kolapata_purchase_requisition.received_req_template"
+    />
+</odoo>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record model="ir.ui.view" id="use_wise_report_markazu">
+        <field name="name">Cash Office Journal Report</field>
+        <field name="model">cash.journal.report</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Cash Journal Report">
+                <group>
+                    <group>
+                        <field name="date_start"/>
+                    </group>
+                    <group>
+                        <field name="date_end"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="get_report" string="Get Report" type="object" class="oe_highlight"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+        <!-- Setting Report -->
+    <record id="action_report_journal_kolap" model="ir.actions.act_window">
+        <field name="name">Cash Office Journal Report</field>
+        <field name="res_model">cash.journal.report</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_journal_main_kolap"
+                name="Custom Reporting"
+                parent="account_accountant.menu_accounting"
+                sequence="22"
+                groups="account.group_account_manager"
+                />
+
+    <menuitem id="menu_journal_kolap"
+                name="Cash Office Journal Report"
+                parent="menu_journal_main_kolap"
+                sequence="15"
+                action="action_report_journal_kolap"
+                groups="account.group_account_manager"
+                />
+ 
+</odoo>

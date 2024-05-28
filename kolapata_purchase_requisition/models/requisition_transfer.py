@@ -54,14 +54,16 @@ class RequisitionTransfer(models.Model):
 
 
 
-    @api.model
-    def create(self, vals):
-        if vals.get('name', _('New')) == _('New'):
-            vals['name'] = self.env['ir.sequence'].next_by_code(
-                'requisition.transfer.sequence') or _('New')
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', _('New')) == _('New'):
+                vals['name'] = self.env['ir.sequence'].next_by_code(
+                    'requisition.transfer.sequence') or _('New')
 
-        res = super(RequisitionTransfer, self).create(vals)
+        res = super(RequisitionTransfer, self).create(vals_list)
         return res
+
 
     def action_submit(self):
         print("Submitted")
@@ -100,8 +102,10 @@ class RequisitionTransfer(models.Model):
         received_requisition.write({'state': 'submit'})
         self.write({'state': 'submit'})
 
+
 class TransferLine(models.Model):
     _name = "requisition.transfer.line"
+    _description = "Transfer Requisition Line"
 
     transfer_id = fields.Many2one('requisition.transfer', string='Requisition Transfer No')
     product_id = fields.Many2one('product.product', string='Product', required=True)

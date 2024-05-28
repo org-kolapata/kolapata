@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cash_journal_report,cash.journal.report,model_cash_journal_report,,1,1,1,1
