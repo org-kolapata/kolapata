@@ -9,9 +9,6 @@
             <form string="Cash Journal Report">
                 <group>
                     <group>
-                        <field name="date_start"/>
-                    </group>
-                    <group>
                         <field name="date_end"/>
                     </group>
                 </group>

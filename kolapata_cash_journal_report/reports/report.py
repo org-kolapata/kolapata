@@ -8,10 +8,9 @@ from odoo.exceptions import UserError
 
 class CashJournalReport(models.TransientModel):
     _name = 'cash.journal.report'
+    _description = "Cash Office Journal Report"
 
-    date_start = fields.Date(string="Start Date", required=True, default=fields.Date.today)
-    date_end = fields.Date(string="End Date", required=True, default=fields.Date.today)
-
+    date_end = fields.Date(string="Date", required=True, default=fields.Date.today)
 
     def get_report(self):
         """Call when button 'Get Report' clicked.
@@ -21,7 +20,6 @@ class CashJournalReport(models.TransientModel):
             'ids': self.ids,
             'model': self._name,
             'form': {
-                'date_start': self.date_start,
                 'date_end': self.date_end,
             },
         }
@@ -48,15 +46,24 @@ class JournalReportUSer(models.AbstractModel):
         model = self.env.context.get('active_model')
         docs = self.env[model].browse(self.env.context.get('active_id'))
 
-        date_start = datetime.strptime(data['form']['date_start'], DATE_FORMAT)
         date_end = datetime.strptime(data['form']['date_end'], DATE_FORMAT)
 
-        date_start = fields.Datetime.to_string(date_start)
         date_end = fields.Datetime.to_string(date_end)
 
-        orders = self.env['account.move'].search(
-            [('date', '>=', date_start), ('date', '<=', date_end), ('state', '=', 'posted'), ('journal_id.name', '=', 'Cash Office')])
+        cash = self.env['account.account'].sudo().search([('name', '=', 'Cash Office')])
+        cash_ids = cash.ids
+
+        orders = self.env['account.move.line'].sudo().search([
+            ('account_id', 'in', cash_ids),
+            ('date', '<=', date_end), ('parent_state', '=', 'posted')])
         print("orders: ", orders)
+
+        total_balance = 0
+
+        for bl in orders:
+            total_balance = total_balance + bl.debit - bl.credit
+
+        print("total_balance: ", total_balance)
 
 
         products = {}
@@ -64,15 +71,17 @@ class JournalReportUSer(models.AbstractModel):
         for line in orders:
 
             products.setdefault(line.company_id,
-                                {'company': line.company_id.name, 'amount_total_signed': 0.0})
-            products[line.company_id]['amount_total_signed'] += line.amount_total_signed
+                                {'company': line.company_id.name, 'debit': 0.0, 'credit': 0.0, 'balance': 0.0})
+            products[line.company_id]['debit'] += line.debit
+            products[line.company_id]['credit'] += line.credit
+            products[line.company_id]['balance'] += (line.debit - line.credit)
 
         print("products: ", list(products.values()))
 
         return {
             'doc_ids': data['ids'],
             'doc_model': data['model'],
-            'date_start': date_start,
+            'total_balance': total_balance,
             'date_end': date_end,
             'products': list(products.values()),
         }
