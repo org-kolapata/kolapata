@@ -14,8 +14,9 @@ class PosOrderLine(models.Model):
             line.unit_cost_kolap = 0.0
             if line.product_id:
                 product = line.product_id
-                if product.bom_count > 0:
-                    product.button_bom_cost()
+                product.button_bom_cost()
+                # if product.bom_count > 0:
+                #     product.button_bom_cost()
                 product_cost = product.standard_price
                 line.total_cost = line.qty * product.cost_currency_id._convert(
                     from_amount=product_cost,
