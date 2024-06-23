@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+  <record id="view_order_product_pivot_inherit_kolap1" model="ir.ui.view">
+     <field name="name">report.pos.order.inherit</field>
+     <field name="model">report.pos.order</field>
+     <field name="inherit_id" ref="point_of_sale.view_report_pos_order_pivot"/>
+     <field name="arch" type="xml">
+       <xpath expr="//field[@name='product_categ_id']" position="after">
+           <field name="pos_category_id" type="row"/>
+       </xpath>
+     </field>
+  </record>
+</odoo>
