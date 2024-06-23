@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_kolapata_pos_report_categ_kolapata_pos_report_categ,kolapata_pos_report_categ.kolapata_pos_report_categ,model_kolapata_pos_report_categ_kolapata_pos_report_categ,base.group_user,1,1,1,1
