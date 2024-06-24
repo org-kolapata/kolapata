@@ -16,19 +16,22 @@ class PosOrderLine(models.Model):
             line.unit_cost_kolap = 0.0
             if line.product_id:
                 product = line.product_id
-                # product.button_bom_cost()
+                product_template = self.env['product.template'].search(
+                        [('id', '=', product.product_tmpl_id.id)])
 
-                print("product.bom_count: ", product.bom_count)
-                _logger.info("product.bom_count")
-                _logger.info(product.bom_count)
                 if product.bom_count > 0:
+                    mrp_bom = self.env['mrp.bom'].search(
+                        [('product_tmpl_id', '=', product_template.id), ('company_id', '=', line.company_id.id)])
+                    for boms in mrp_bom:
+                        for components in boms.bom_line_ids:
+                            cp_product = components.product_id
+                            print("cp_product: ", cp_product.name)
+                            if cp_product.bom_count > 0:
+                                cp_product.button_bom_cost()
+                                print("cp_product.standard_price: ", cp_product.standard_price)
                     product.button_bom_cost()
-                    _logger.info("product.bom_count2")
-                    _logger.info(product.bom_count)
                 product_cost = product.standard_price
-                print("product_cost: ", product_cost)
-                _logger.info("product_cost")
-                _logger.info(product_cost)
+
                 line.total_cost = line.qty * product.cost_currency_id._convert(
                     from_amount=product_cost,
                     to_currency=line.currency_id,

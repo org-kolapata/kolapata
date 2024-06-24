@@ -1,14 +1,14 @@
 <odoo>
   <data>
     <record id="view_pos_pos_form_inherit_kolap1" model="ir.ui.view">
-            <field name="name">pos.order.inherit.kolap1</field>
-            <field name="model">pos.order</field>
-            <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='lines']/tree/field[@name='price_unit']" position="after">
-                  <field name="unit_cost_kolap"/>
-                </xpath>
-            </field>
+        <field name="name">pos.order.inherit.kolap1</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lines']/tree/field[@name='price_unit']" position="after">
+              <field name="unit_cost_kolap"/>
+            </xpath>
+        </field>
     </record>
   </data>
 </odoo>
