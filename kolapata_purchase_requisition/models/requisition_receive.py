@@ -25,6 +25,7 @@ class RequisitionReceive(models.Model):
     sale_count = fields.Integer(string='Total Sale', compute='_compute_sale_ids')
 
     transfer_req_id = fields.Many2one('requisition.transfer', string='Transfer Requisition No')
+    req_department_id = fields.Many2one('req.department', 'Department', tracking=True)
     sender_user_id = fields.Many2one('res.users', string='Requester (User)', readonly=True)
     current_user_id = fields.Many2one('res.users', string='Current User', readonly=True, compute="_compute_current_user")
     receiver_user_id = fields.Many2one('res.users', string='Provider (User)', required=True)

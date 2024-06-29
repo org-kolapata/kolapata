@@ -54,6 +54,7 @@
                             <group>
 
                                 <field name="date" readonly="state != 'draft'"/>
+                                <field name="req_department_id" widget="selection" readonly="state != 'draft'"/>
                                 <field name="received_transfer_id" readonly="1"/>
                                 <field name="from_company" options="{'no_create': True, 'no_open': True}" />
 
@@ -83,6 +84,28 @@
                         <field name="activity_ids" widget="mail_activity"/>
                     </div>
                 </form>
+            </field>
+        </record>
+
+        <record id="transfer-req_view_search_kolap" model="ir.ui.view">
+            <field name="name">requisition.transfer.search.kolap</field>
+            <field name="model">requisition.transfer</field>
+            <field name="arch" type="xml">
+                <search string="Purchase Requisition">
+                    <field name="date" />
+                    <field name="to_company"/>
+                    <field name="req_department_id"/>
+                    <field name="sender_user_id"/>
+                    <field name="receiver_user_id"/>
+                    <filter string="My Purchase Requisition" name="my_requisition" domain="[('sender_user_id', '=', uid)]"/>
+                    <separator />
+                    <group expand="0" string="Group By">
+                        <filter string="Provider Company" name="to_company" domain="[]" context="{'group_by': 'to_company'}"/>
+                        <filter string="Department" name="req_department_id" domain="[]" context="{'group_by': 'req_department_id'}"/>
+                        <filter string="Receiver User" name="receiver_user_id" domain="[]" context="{'group_by': 'receiver_user_id'}" />
+                        <filter string="Status" name="status" domain="[]" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
             </field>
         </record>
 
