@@ -113,6 +113,7 @@
                             <group>
                                 <field name="date_transfer" readonly="state in ['submit', 'confirm', 'cancel']"/>
                                 <field name="date_confirm" readonly="state in ['confirm', 'cancel']"/>
+                                <field name="req_department_id" widget="selection" readonly="state in ['submit', 'confirm', 'cancel']"/>
                                 <field name="transfer_req_id" readonly="1"/>
                                 <field name="pricelist_id" readonly="state in ['confirm', 'cancel']"/>
                                 <field name="from_company" options="{'no_create': True, 'no_open': True}"
@@ -146,6 +147,29 @@
                         <field name="activity_ids" widget="mail_activity"/>
                     </div>
                 </form>
+            </field>
+        </record>
+
+        <record id="received-req_view_search_kolap" model="ir.ui.view">
+            <field name="name">requisition.receive.search.kolap</field>
+            <field name="model">requisition.receive</field>
+            <field name="arch" type="xml">
+                <search string="Received Requisition">
+                    <field name="date_transfer" />
+                    <field name="date_confirm"/>
+                    <field name="from_company"/>
+                    <field name="req_department_id"/>
+                    <field name="sender_user_id"/>
+                    <field name="receiver_user_id"/>
+                    <filter string="My Received Requisition" name="my_requisition" domain="[('receiver_user_id', '=', uid)]"/>
+                    <separator />
+                    <group expand="0" string="Group By">
+                        <filter string="Sender Company" name="from_company" domain="[]" context="{'group_by': 'from_company'}"/>
+                        <filter string="Department" name="req_department_id" domain="[]" context="{'group_by': 'req_department_id'}"/>
+                        <filter string="Sender User" name="sender_user_id" domain="[]" context="{'group_by': 'sender_user_id'}" />
+                        <filter string="Status" name="status" domain="[]" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
             </field>
         </record>
 

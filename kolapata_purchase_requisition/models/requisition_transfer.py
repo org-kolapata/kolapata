@@ -30,7 +30,8 @@ class RequisitionTransfer(models.Model):
     from_company = fields.Many2one('res.company', 'Company', required=True, readonly=True, index=True,
                                    default=lambda self: self.env.company)
     to_company = fields.Many2one('res.company', 'Provider (Company)', required=True, index=True)
-    received_transfer_id = fields.Many2one('requisition.receive', 'Received Transfer No', readonly=True, )
+    received_transfer_id = fields.Many2one('requisition.receive', 'Received Transfer No', readonly=True)
+    req_department_id = fields.Many2one('req.department', 'Department', tracking=True)
 
 
     @api.onchange('from_company')
@@ -80,6 +81,7 @@ class RequisitionTransfer(models.Model):
         received_requisition['receiver_user_id'] = self.receiver_user_id.id
         received_requisition['date_transfer'] = self.date
         received_requisition['transfer_req_id'] = self.id
+        received_requisition['req_department_id'] = self.req_department_id.id
 
         received_requisition['received_order_line_ids'] = [
             (0, 0, {
@@ -116,6 +118,8 @@ class TransferLine(models.Model):
     def _onchange_product_id(self):
         for rec in self:
             rec.uom_id = rec.product_id.uom_id.id
+
+
 
 
 

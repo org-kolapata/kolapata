@@ -26,7 +26,7 @@
         'security/security.xml',
         'views/views.xml',
         'views/templates.xml',
-        # 'views/report.xml',
+        'views/department.xml',
         'views/res_partner.xml',
         'views/requisition_transfer.xml',
         'views/requisition_receive.xml',

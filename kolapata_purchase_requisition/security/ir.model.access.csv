@@ -3,3 +3,5 @@ access_requisition_transfer,requisition.transfer,model_requisition_transfer,,1,1
 access_requisition_transfer_line,requisition.transfer.line,model_requisition_transfer_line,,1,1,1,1
 access_requisition_receive,requisition.receive,model_requisition_receive,,1,1,1,1
 access_requisition_receive_line,requisition.receive.line,model_requisition_receive_line,,1,1,1,1
+access_req_department,req.department,model_req_department,,1,1,1,1
+

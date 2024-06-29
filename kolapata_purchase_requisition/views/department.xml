@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="dept_tree_view_kolap">
+            <field name="name">req.department.tree</field>
+            <field name="model">req.department</field>
+            <field name="arch" type="xml">
+
+                <tree string="Department">
+                   <field name="name"/>
+                </tree>
+
+            </field>
+         </record>
+
+        <record model="ir.ui.view" id="dept_form_view_kolap">
+            <field name="name">req.department.form</field>
+            <field name="model">req.department</field>
+            <field name="arch" type="xml">
+
+                <form string="Department">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                            </group>
+                            <group></group>
+
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                    </div>
+                </form>
+
+            </field>
+         </record>
+
+         <record model="ir.actions.act_window" id="kolap_dept_action">
+            <field name="name">Department</field>
+            <field name="res_model">req.department</field>
+            <field name="view_mode">tree,form</field>
+             <field name="help" type="html">
+                <p class="oe_view_nocontent_create">Create the first Department !
+                </p>
+            </field>
+        </record>
+
+        <menuitem name="Department"
+                  id="department_main_menu"
+                  parent="requisition_root_menu"
+                  sequence="7"
+        />
+
+
+        <menuitem id="kolap_dept_menu"
+                  name="Department"
+                  parent="department_main_menu"
+                  action="kolap_dept_action"
+                  sequence="1"/>
+
+    </data>
+</odoo>
